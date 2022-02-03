@@ -1,0 +1,57 @@
+%Basic Formulation
+%Finite Difference form of Laplace’s equation
+%
+
+nx = 100;
+ny = 100;
+niter = 200;
+
+V = zeros(nx,ny);
+
+%q/k == 0;
+
+dvt = 1;
+dvb = 1;
+
+vt = 0; %if dvt=0, V
+vb = 0;
+
+%cond1 left BC is 1, right BC is 0, derivative of top and bottom are 0
+vl = 1;
+vr = 0;
+
+%cond2 left BC is 1, right BC is 1, derivative of top and bottom are 0
+% vl = 1;
+% vr = 1;
+
+figure(1)
+for i = 1:niter
+    for m = 2:(nx-1)
+        for n = 2:(ny-1)
+            V(1,:) = vl;
+            V(nx,:) = vr;
+            if ~dvt %
+                V(:,ny) = vt;
+            else
+                V(:,ny) = V(:,ny-1);
+            end
+            if ~dvb
+                V(:,1) = vb;
+            else
+                V(:,1) = V(:,2);
+            end
+            V(m,n) = ((V(m+1,n) + V(m-1,n) + V(m,n+1) + V(m,n-1)))/4;
+        end
+    end
+    if mod(i,50) == 0 %only plots once every 50 times through
+        surf(V')
+        pause(0.05)
+    end
+end
+
+[Ex, Ey] = gradient(V);
+    
+figure(2)
+quiver(-Ey',-Ex',10)
+pause(0.001)
+
